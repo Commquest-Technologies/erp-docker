@@ -24,11 +24,7 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9001"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+        max_attempts: 5
 
   portainer:
     image: portainer/portainer-ce:latest
