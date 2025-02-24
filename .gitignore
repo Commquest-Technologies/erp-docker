@@ -4,7 +4,6 @@
 !.env.example
 
 # Ignore secrets
-secrets
 secrets/*
 !secrets/.gitkeep
 
