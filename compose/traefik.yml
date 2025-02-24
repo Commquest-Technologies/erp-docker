@@ -28,18 +28,18 @@ services:
         - traefik.constraint-label=traefik-public
         
         # Dashboard Router Configuration
-        - traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)
+        - traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DOMAIN:?Missing TRAEFIK_DOMAIN variable}`)
         - traefik.http.routers.dashboard.entrypoints=websecure
         - traefik.http.routers.dashboard.service=api@internal
         - traefik.http.routers.dashboard.tls=true
         - traefik.http.routers.dashboard.tls.certresolver=le
         
         # Security Middleware
-        - traefik.http.middlewares.admin-auth.basicauth.users=${HASHED_PASSWORD:?Variable not set}
+        - traefik.http.middlewares.admin-auth.basicauth.users=${HASHED_PASSWORD:?Missing HASHED_PASSWORD variable}
         - traefik.http.middlewares.secure-headers.headers.sslredirect=true
         - traefik.http.middlewares.secure-headers.headers.stsSeconds=31536000
         - traefik.http.middlewares.secure-headers.headers.forceSTSHeader=true
-        - traefik.http.middlewares.secure-headers.headers.sslHost=${TRAEFIK_DOMAIN}
+        - traefik.http.middlewares.secure-headers.headers.sslHost=${TRAEFIK_DOMAIN:?Missing TRAEFIK_DOMAIN variable}
         - traefik.http.middlewares.secure-headers.headers.sslForceHost=true
         - traefik.http.middlewares.secure-headers.headers.browserXssFilter=true
         - traefik.http.middlewares.secure-headers.headers.contentTypeNosniff=true
@@ -52,14 +52,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certificates:/certificates
     environment:
-      - TZ=Africa/Johannesburg
+      - TZ=${TZ:-Africa/Johannesburg}
     command:
       # Provider Configuration
-      - --providers.docker=true
-      - --providers.docker.swarmmode=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-public`)
-      - --providers.docker.network=traefik-public
+      - --providers.swarm=true
+      - --providers.swarm.exposedbydefault=false
+      - --providers.swarm.constraints=Label('traefik.constraint-label', 'traefik-public')
+      - --providers.swarm.network=traefik-public
       
       # Entrypoints Configuration
       - --entrypoints.web.address=:80
@@ -68,7 +67,7 @@ services:
       - --entrypoints.websecure.address=:443
       
       # Let's Encrypt Configuration
-      - --certificatesresolvers.le.acme.email=${EMAIL:?Variable not set}
+      - --certificatesresolvers.le.acme.email=${EMAIL}
       - --certificatesresolvers.le.acme.storage=/certificates/acme.json
       - --certificatesresolvers.le.acme.tlschallenge=true
       
