@@ -1,0 +1,18 @@
+# Ignore environment files
+.env
+.env.*
+!.env.example
+
+# Ignore secrets
+secrets/*
+!secrets/.gitkeep
+
+# Ignore certificates
+certs/
+*.pem
+*.key
+*.crt
+
+# OS files
+.DS_Store
+Thumbs.db
